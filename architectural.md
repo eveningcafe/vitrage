@@ -1,4 +1,4 @@
-[a link](entity_graph.md)
+
 
 ## I. Tổng quan về Vitrage:
 ### 1. Khái niệm:
