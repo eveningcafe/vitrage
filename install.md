@@ -60,17 +60,35 @@ topics = notifications,vitrage_notifications
 ```
 ### Cài trên openstack
 #### chuẩn bị cho keystone-endpoint, database:
-- Tại keystone chạy các lệnh:
+- Tại keystone chạy các lệnh để tạo user, serivce, endpoint
+```
+openstack user create vitrage --password Welcome123 --domain=Default
+openstack role add admin --user vitrage --project service
+openstack role add admin --user vitrage --project admin
+openstack service create rca --name vitrage --description="Root Cause Analysis Service"
+openstack endpoint create --region RegionOne  metric public http://controller:8041
+openstack endpoint create --region RegionOne  rca public http://controller:8999
+openstack endpoint create --region RegionOne  vitrage internal http://controller:8999 
+openstack endpoint create --region RegionOne  vitrage admin http://controller:8999 
+```
+- Tại mysql tạo vitrage database:
+```
+mysql -u root -p
+CREATE DATABASE vitrage;
+GRANT ALL PRIVILEGES ON vitrage.* TO 'vitrage'@'localhost' \
+  IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON vitrage.* TO 'vitrage'@'%' \
+  IDENTIFIED BY 'Welcome123';
 ```
 
-```
+
 #### cài vitrage-core
+
 - Cài các gói 
 ```
 wget http://tarballs.openstack.org/vitrage/vitrage-stable-queens.tar.gz
 tar xvzf vitrage-stable-queens.tar.gz
 cd vitrage-2.3.1.dev3/
-(queens: vitrage-dashboard-1.4.3.dev1 vitrage-2.3.1.dev3 python-vitrageclient-2.1.1.dev1 - tuy nhien cai = cach " pip install python_vitrageclient==2.1.0 ")
 pip install -r requirements.txt
 python setup.py install
 ```
@@ -89,7 +107,8 @@ transport_url = rabbit://openstack:Welcome123@controller
 log_dir = /var/log/vitrage
 [datasources]
 types = nova.host,nova.instance,nova.zone,static,aodh,cinder.volume,neutron.network,neutron.port,heat.stack,doctor
-
+[database]
+connection = = mysql+pymysql://vitrage:Welcome123@controller/vitrage
 
 [keystone_authtoken]
 auth_uri = http://controller:5000/v3
@@ -126,6 +145,8 @@ topics = notifications,vitrage_notifications
 wget http://tarballs.openstack.org/vitrage-dashboard/vitrage-dashboard-stable-queens.tar.gz
 tar xvzf vitrage-dashboard-stable-queens.tar.gz
 cd vitrage-dashboard-1.4.3.dev1/
+pip install -r requirements.txt
+python setup.py install
 cp enabled/* /usr/share/openstack-dashboard/openstack_dashboard/local/enabled/
 ```
 ( gói /usr/share/openstack-dashboard có thể có địa chỉ khác biệt tùy hệ thống)
