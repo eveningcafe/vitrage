@@ -169,6 +169,9 @@ topics = notifications,vitrage_notifications
 restart các dịch vụ này
 ### Khởi chạy:
 Tạo database:
+```
+vitrage-dbsync --conf...
+```
 
 Chạy các dịch vụ:
 ```
