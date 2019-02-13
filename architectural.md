@@ -51,8 +51,8 @@ Alarm về bản chất cũng là 1 entity nên các bước từ 1 đến 5 cũ
 8. Evaluator push alarm vào entity queue.<br/>
 9. Graph update thêm các alarm mới <br/>
 10. Graph thêm thông báo rằng có 1 alarm mới trên instance, đẩy thông báo này vào messasge queue <br/>
-11. Vitrage Notifier định nghĩa alarm cho aodh - set state “alarm”<br/>
-- 
+11. Vitrage Notifier định nghĩa alarm cho aodh - set state “alarm” <br/>
+![kttq](image/lhd2vd.png)
 ### Ref:
 
 https://wiki.openstack.org/wiki/Vitrage 
