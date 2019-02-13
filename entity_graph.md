@@ -28,6 +28,7 @@ Xem thêm về cách viết 1 datasouce tại : https://github.com/openstack/vit
 - service openstack : aodh, ceilometer, cinder, heat, neutron, nova.
 - extenal monitor, gồm: collectd, zabix, nagios, doctor.
 - static datasource: đọc thông tin từ các file cấu hình người dùng cấp
+
 Cách vitrage chuẩn hóa thông tin từ datasouce:
 
 https://github.com/openstack/vitrage/blob/stable/queens/doc/source/contributor/alarm-severity-config.rst
