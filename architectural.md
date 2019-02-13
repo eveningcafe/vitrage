@@ -1,1 +1,1 @@
-[a link](vitrage/blob/master/entity_graph.md)
+[a link](entity_graph.md)
