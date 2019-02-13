@@ -12,14 +12,14 @@ vitrage graph : sử dụng networkx diver trình diễn đồ thị cho ngườ
 
 Mỗi datasouce driver định nghĩa 2 class: Driver Class, Transformer Class
 - Driver Class : Định nghĩa cách lấy thông tin về thực thể: resources (physical, virtual) ; alarms (Aodh, Nagios, Zabbix...) các sự cách thức lấy thông tin
-- Transformer Clas: Định nghĩa cách đưa được thông tin đó vào đồ thị, như:  với mỗi sự kiện cần thêm, sửa xóa các đỉnh, cạnh như thế nào
+- Transformer Class: Định nghĩa cách đưa được thông tin đó vào đồ thị, như:  với mỗi sự kiện cần thêm, sửa xóa các đỉnh, cạnh như thế nào
 
 Khi khởi tạo graph, datasouce driver gọi "get-all" - lấy về toàn bộ thông tin hệ thống hiện tại. Bằng cách tạo các client gọi đến api của mỗi service (nova, neutron,...) 
 
 Defaut cứ 10 phút, diver lại snapshot dữ liệu hiện tại và gọi get-all một lần
 
-Khi có sự thay đổi trong hệ thống : vd thêm bớt host có aodh alarm. Vitrage nhận biết bởi 1 trong 2 cách:
-- polling mechanism: gọi đến hàm get_changes 
+Khi có sự thay đổi trong hệ thống : vd thêm bớt host, có aodh alarm. Vitrage nhận biết bởi 1 trong 2 cách:
+- polling mechanism: gọi đến hàm get_changes - định nghĩa trong Driver Class
 - pushing mechanism: đọc được messeage từ message queue mà service đó gửi lên, topic "vitrage_notifications"
 ( chỉ có  static datasouce driver dùng polling - tức sẽ đọc từ thư mục- hoặc trong database; các datasouce khác đều sử dụng pushing mechaism)
 
@@ -35,4 +35,16 @@ https://github.com/openstack/vitrage/blob/stable/queens/doc/source/contributor/a
 
 https://github.com/openstack/vitrage/blob/stable/queens/doc/source/contributor/resource-state-config.rst
 
-### Cách thêm static datasouce: 
+### Cách cấu hình static datasouce: 
+https://docs.openstack.org/vitrage/latest/contributor/static-config.html
+
+Thêm vào /etc/vitrage/vitrage.conf
+Viết template: 
+
+### Cách cấu hình zabbix datasouce:
+Cài đặt zabbix :
+Cấu hình mapping thực thể vật lý:
+- switch vào đồ thị
+- host vào đồ thị
+
+### Một số lỗi đã gặp
