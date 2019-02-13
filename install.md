@@ -3,7 +3,7 @@
 Sau khi so sánh các phiên bản pike-queens, Em thấy sử dụng bản queen phù hợp hơn, do:
 Bản vitrage pike gặp một số issue như:
 - Darshboard giao tiếp với api keystone version_2. Sử dụng sẽ thấy lỗi "missing project id, project name,.." . Cách fix: sửa trong code
-- Các template được đọc trực tiếp trong thư mục, cần reset dịch vụ khi thêm template mới. <br/>
+- Các template được đọc trực tiếp trong thư mục, cần r dịch vụ khi thêm template mới. <br/>
 Sang bản queen , template được lưu vào mysql . Database bắt đầu mới dược vitrage sử dụng tại bản queens.
 - Hỗ trợ aodh chưa hoàn chỉnh. Sang bản queen mới có thể nhận  alarm dạng "Aodh Gnocchi threshold alarm"
 
@@ -159,4 +159,31 @@ sudo service apache2 restart
 ```
 pip install python_vitrageclient==2.1.0 
 ```
+#### Thiết đặt cho các serivice khác 
+vitrage lấy thông tin datasouce từ rabbitmq topic . thay đổi trong aodh.conf, nova.conf, neutron.conf, cinder.conf, heat.conf:
+```
+[oslo_messaging_notifications]
+driver = messagingv2
+topics = notifications,vitrage_notifications
+```
+restart các dịch vụ này
+### Khởi chạy:
+Tạo database:
 
+Chạy các dịch vụ:
+```
+vitrage-collector 
+vitrage-graph
+vitrage-api
+vitrage-notifier
+```
+### Một số lỗi khi cài đặt đã gặp:
+Khi khởi tạo data, gặp lỗi báo:
+
+```
+DBError: (pymysql.err.InternalError) (1075, u'Incorrect table definition; there can be only one auto column and it must be defined as a key')
+```
+Nguyên nhân: kịch bản tạo database của vitrage lỗi. Transaction trong kịch bản này bị từ chối của storage engine
+Khắc phục : sửa defaut storage engine từ InnoDB về MyISAM 
+
+https://stackoverflow.com/questions/6479655/how-do-i-set-myisam-as-default-table-handler-in-mysql
