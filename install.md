@@ -58,3 +58,84 @@ notification_driver=messagingv2
 driver = messagingv2
 topics = notifications,vitrage_notifications
 ```
+### Cài trên openstack
+#### chuẩn bị cho keystone-endpoint, database:
+- Tại keystone chạy các lệnh:
+```
+
+```
+#### cài vitrage-core
+- Cài các gói 
+```
+wget http://tarballs.openstack.org/vitrage/vitrage-stable-queens.tar.gz
+tar xvzf vitrage-stable-queens.tar.gz
+cd vitrage-2.3.1.dev3/
+(queens: vitrage-dashboard-1.4.3.dev1 vitrage-2.3.1.dev3 python-vitrageclient-2.1.1.dev1 - tuy nhien cai = cach " pip install python_vitrageclient==2.1.0 ")
+pip install -r requirements.txt
+python setup.py install
+```
+- Tạo thư mục conf
+```
+cd vitrage-2.3.1.dev3/
+cp -r etc/vitrage /etc/
+mkdir /etc/vitrage/static_datasources
+chmod 755 /etc/vitrage/static_datasources
+mkdir /var/log/vitrage
+```
+- Tạo file conf /etc/vitrage/vitrage.conf nội dung :
+```
+[DEFAULT]
+transport_url = rabbit://openstack:Welcome123@controller
+log_dir = /var/log/vitrage
+[datasources]
+types = nova.host,nova.instance,nova.zone,static,aodh,cinder.volume,neutron.network,neutron.port,heat.stack,doctor
+
+
+[keystone_authtoken]
+auth_uri = http://controller:5000/v3
+auth_version = v3
+region_name = RegionOne
+project_domain_name = Default
+project_name = service
+user_domain_name = Default
+password = Welcome123
+username = vitrage
+auth_url = http://controller:35357/v3
+auth_type = password
+
+[service_credentials]
+auth_url = http://controller:5000/v3
+auth_version = v3
+region_name = RegionOne
+project_name = admin
+password = Welcome123
+project_domain_id = default
+user_domain_id = default
+username = admin
+auth_type = password
+
+[oslo_messaging_notifications]
+driver = messagingv2
+topics = notifications,vitrage_notifications
+```
+( sửa các phần authen cho phù hợp hệ thống cụ thể) 
+
+#### cài vitrage-drashboard
+- Cài các gói: 
+```
+wget http://tarballs.openstack.org/vitrage-dashboard/vitrage-dashboard-stable-queens.tar.gz
+tar xvzf vitrage-dashboard-stable-queens.tar.gz
+cd vitrage-dashboard-1.4.3.dev1/
+cp enabled/* /usr/share/openstack-dashboard/openstack_dashboard/local/enabled/
+```
+( gói /usr/share/openstack-dashboard có thể có địa chỉ khác biệt tùy hệ thống)
+- compress horion
+```
+sudo python /usr/share/openstack-dashboard/manage.py compress
+sudo service apache2 restart
+```
+#### cài vitrage-cli-client (python_vitrageclient)
+```
+pip install python_vitrageclient==2.1.0 
+```
+
