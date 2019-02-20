@@ -1,0 +1,90 @@
+metadata:
+  name: rca alarm connect to instance caused by  contrack host
+  description: rac alarm connect to instance caused by  contrack host
+definitions:
+  entities:
+      - entity:
+          template_id: alarm_ping_instance
+          category: ALARM
+          name: cannot ping to instance
+      - entity:
+          template_id: alarm_connect_agent
+          category: ALARM
+          name: cannot connect zabbix agent
+      - entity:
+          template_id: alarm_high_conntrack
+          category: ALARM
+          name: host high conntrack
+          type: zabbix
+      - entity:
+          template_id: instance
+          category: RESOURCE
+          type: nova.instannce
+      - entity:
+          template_id: host
+          category: RESOURCE
+          type: nova.host
+  relationships:
+      - relationship: 
+          template_id : alarm_ping_instance_on_instance
+          source: alarm_ping_instance
+          target: instance
+          relationship_type: on
+      - relationship: 
+          template_id : alarm_connect_agent_on_instance
+          source: alarm_connect_agent
+          target: instance
+          relationship_type: on
+      - relationship:
+          template_id: alarm_high_conntrack_on_host
+          source: alarm_high_conntrack
+          target: host
+          relationship_type: on
+      - relationship: 
+          template_id : host_contain_instance
+          source: host
+          target: instance
+          relationship_type: contains
+scenarios:
+    - scenario:
+        condition: alarm_ping_instance_on_instance or alarm_connect_agent_on_instance and host_contain_instance and alarm_high_conntrack_on_host
+        actions:
+            - action:
+                action_type : add_causal_relationship
+                action_target:
+                  source: alarm_high_conntrack_on_host 
+                  target: alarm_ping_instance_on_instance
+            - action:
+                action_type : add_causal_relationship
+                action_target:
+                  source: alarm_high_conntrack_on_host
+                  target: alarm_connect_agent_on_instance
+    - scenario:
+        condition: host_contain_instance and alarm_high_conntrack_on_host
+        actions:
+            - action:
+                action_type : set_state
+                properties:
+                  state: warning
+                action_target:
+                  target: host
+            - action:
+                action_type : set_state
+                properties:
+                  state: warning
+                action_target:
+                  target: instance
+            - action:
+                action_type : raise_alarm
+                properties:
+                  alarm_name: cannot connect zabbix agent 
+                  severity: warning
+                action_target:
+                  target: instance
+            - action:
+                action_type : raise_alarm
+                properties:
+                  alarm_name: cannot ping to instance
+                  severity: warning
+                action_target:
+                  target: instance
