@@ -1,0 +1,46 @@
+metadata:
+  name: rca application died caused by high mem on instance 
+  description: rca application died caused by high mem on instance 
+definitions:
+  entities:
+      - entity:
+          template_id: alarm_high_memory
+          category: ALARM
+          name: instance high memory usage
+      - entity:
+          template_id: alarm_application_died
+          category: ALARM
+          name: application died
+      - entity:
+          template_id: instance
+          category: RESOURCE
+          type: nova.instance
+      - entity:
+          template_id: instance
+          category: RESOURCE
+          type: application
+  relationships:
+      - relationship: 
+          template_id : alarm_high_memory_on_instance
+          source: alarm_high_memory
+          target: instance
+          relationship_type: on
+      - relationship: 
+          template_id : alarm_application_died_on_applicaion
+          source: alarm_application_died
+          target: instance
+          relationship_type: on
+      - relationship: 
+          template_id : application_runby_instance
+          source: application
+          target: instance
+          relationship_type: runby
+scenarios:
+    - scenario:
+        condition: alarm_high_memory_on_instance and alarm_application_died_on_applicaion and application_runby_instance
+        actions:
+            - action:
+                action_type : add_causal_relationship
+                action_target:
+                  source: alarm_high_memory_on_instance 
+                  target: alarm_application_died_on_applicaion
